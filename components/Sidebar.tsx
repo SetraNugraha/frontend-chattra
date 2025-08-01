@@ -1,3 +1,5 @@
+"use client"
+
 import { contacts } from "@/dummy-data/contacts"
 import Image from "next/image"
 import Link from "next/link"
@@ -17,8 +19,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "./ui/button"
+import { useState } from "react"
 
 export const Sidebar = () => {
+  const [isSettingCLick, setIsSettingClick] = useState<boolean>(false)
   return (
     <div className="relative h-full w-[30%] bg-gray-200 rounded-tl-xl rounded-bl-xl">
       <div className="px-5 pt-4">
@@ -34,30 +38,19 @@ export const Sidebar = () => {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Add new contact</DialogTitle>
-                <DialogDescription>
-                  Find new contact from number phone, start chatting to each
-                  other
-                </DialogDescription>
+                <DialogDescription>Find new contact from number phone, start chatting to each other</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4">
                 <div className="grid gap-3">
                   <Label htmlFor="number" className="font-semibold">
                     Phone Number
                   </Label>
-                  <Input
-                    id="number"
-                    name="number"
-                    type="number"
-                    placeholder="8 Digit, ex: 87628176"
-                  />
+                  <Input id="number" name="number" type="number" placeholder="8 Digit, ex: 87628176" />
                 </div>
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer hover:brightness-70"
-                  >
+                  <Button variant="outline" className="cursor-pointer hover:brightness-70">
                     Cancel
                   </Button>
                 </DialogClose>
@@ -80,13 +73,7 @@ export const Sidebar = () => {
               key={contact.id}
               className="flex items-center gap-x-3 px-2 py-1 hover:bg-slate-300 hover:rounded-md"
             >
-              <Image
-                src={"/snorlax-pixel.png"}
-                alt="profile-image"
-                width={40}
-                height={40}
-                className="rounded-md"
-              />
+              <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
 
               <div>
                 <h4 className="font-semibold">{contact.number}</h4>
@@ -97,19 +84,14 @@ export const Sidebar = () => {
         </div>
       </div>
 
+      {/* Footer */}
       <div className="absolute w-full bottom-0 rounded-bl-xl px-3 py-2 z-50 bg-gray-300/80">
         <div className="flex items-center justify-between pr-5">
           <Link
             href={`/contact/871561234`}
             className="flex items-center gap-x-3 px-2 py-1 w-[80%] hover:bg-white hover:rounded-md hover:rounded-bl-xl"
           >
-            <Image
-              src={"/snorlax-pixel.png"}
-              alt="profile-image"
-              width={40}
-              height={40}
-              className="rounded-md"
-            />
+            <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
 
             <div>
               <h4 className="font-semibold">08182142</h4>
@@ -117,9 +99,24 @@ export const Sidebar = () => {
             </div>
           </Link>
 
-          <button className="cursor-pointer hover:text-gray-500 ">
-            <IoMdSettings size={28} />
-          </button>
+          {/* Setting Dropdown */}
+          <div className="relative">
+            <button className="cursor-pointer hover:text-gray-500" onClick={() => setIsSettingClick(!isSettingCLick)}>
+              <IoMdSettings size={28} />
+            </button>
+
+            {isSettingCLick && (
+              <div className="bg-gray-600  absolute -left-20 -top-21 w-[120px] text-white py-2 px-3 rounded-md flex flex-col gap-y-1 items-start text-sm tracking-wider">
+                <button className="cursor-pointer px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-600 w-full text-start">
+                  Edit Profile
+                </button>
+                <span className="h-0.5 w-full bg-white"></span>
+                <button className="cursor-pointer px-2 py-1 rounded-md hover:bg-red-600 w-full text-start">
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
