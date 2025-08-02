@@ -9,10 +9,18 @@ interface IRegister {
   username: string
 }
 
+interface IAuthUser {
+  id: string
+  username: string
+  phone: string
+  profileImage: string | null
+  token: string | null
+}
+
 interface IAuthContext {
   login: (phone: string) => Promise<{ success: boolean; message: string; data: any }>
   register: (payload: IRegister) => Promise<{ success: boolean; message: string; data: any }>
-  logout: () => Promise<void>
+  logout: () => Promise<{ success: string; message: string }>
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined)
@@ -26,7 +34,8 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [authUser, setAuthUser] = useState(null)
+  const [authUser, setAuthUser] = useState<IAuthUser | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const login = async (phone: string) => {
@@ -49,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      const result = await axiosInstance.post("/auth/logout")
+      const result = await axiosInstance.delete("/auth/logout")
       return result.data
     } catch (error) {
       throw error

@@ -4,7 +4,7 @@ import { contacts } from "@/dummy-data/contacts"
 import Image from "next/image"
 import Link from "next/link"
 import { LuMessageSquarePlus } from "react-icons/lu"
-import { IoMdSettings } from "react-icons/io"
+import { SidebarFooter } from "./SidebarFooter"
 
 import {
   Dialog,
@@ -19,10 +19,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "./ui/button"
-import { useState } from "react"
 
 export const Sidebar = () => {
-  const [isSettingCLick, setIsSettingClick] = useState<boolean>(false)
   return (
     <div className="relative h-full w-[30%] bg-gray-200 rounded-tl-xl rounded-bl-xl">
       <div className="px-5 pt-4">
@@ -85,40 +83,7 @@ export const Sidebar = () => {
       </div>
 
       {/* Footer */}
-      <div className="absolute w-full bottom-0 rounded-bl-xl px-3 py-2 z-50 bg-gray-300/80">
-        <div className="flex items-center justify-between pr-5">
-          <Link
-            href={`/contact/871561234`}
-            className="flex items-center gap-x-3 px-2 py-1 w-[80%] hover:bg-white hover:rounded-md hover:rounded-bl-xl"
-          >
-            <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
-
-            <div>
-              <h4 className="font-semibold">08182142</h4>
-              <p className="text-sm text-slate-500">Setra Nugraha</p>
-            </div>
-          </Link>
-
-          {/* Setting Dropdown */}
-          <div className="relative">
-            <button className="cursor-pointer hover:text-gray-500" onClick={() => setIsSettingClick(!isSettingCLick)}>
-              <IoMdSettings size={28} />
-            </button>
-
-            {isSettingCLick && (
-              <div className="bg-gray-600  absolute -left-20 -top-21 w-[120px] text-white py-2 px-3 rounded-md flex flex-col gap-y-1 items-start text-sm tracking-wider">
-                <button className="cursor-pointer px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-600 w-full text-start">
-                  Edit Profile
-                </button>
-                <span className="h-0.5 w-full bg-white"></span>
-                <button className="cursor-pointer px-2 py-1 rounded-md hover:bg-red-600 w-full text-start">
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <SidebarFooter />
     </div>
   )
 }
