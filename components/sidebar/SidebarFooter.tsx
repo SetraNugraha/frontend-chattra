@@ -37,8 +37,8 @@ export const SidebarFooter = () => {
           <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
 
           <div>
-            <h4 className="font-semibold">{authUser?.phone}</h4>
-            <p className="text-sm text-slate-500">{authUser?.username}</p>
+            <h4 className="font-semibold">{authUser?.phone ?? "-"}</h4>
+            <p className="text-sm text-slate-500">{authUser?.username ?? "Unknown User"}</p>
           </div>
         </Link>
 

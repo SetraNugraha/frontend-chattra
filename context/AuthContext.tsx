@@ -23,7 +23,9 @@ interface IAuthContext {
   login: (phone: string) => Promise<{ success: boolean; message: string; data: any }>
   register: (payload: IRegister) => Promise<{ success: boolean; message: string; data: any }>
   logout: () => Promise<{ success: string; message: string }>
-  authUser: IAuthUser | null
+  refreshToken: () => Promise<{ success: string; message: string; data: { accessToken: string } }>
+  authUser: IAuthUser | null | undefined
+  accessToken: string | null | undefined
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined)
@@ -40,7 +42,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { findUserById } = useUser()
   const [authUser, setAuthUser] = useState<IAuthUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const login = async (phone: string) => {
     try {
@@ -52,10 +53,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthUser(userData)
       return result.data
     } catch (error) {
-      console.log("context login error: ", error)
+      console.error("context login error: ", error)
+      setAccessToken(null)
+      setAuthUser(null)
       throw error
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -77,5 +78,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  return <AuthContext.Provider value={{ login, register, logout, authUser }}>{children}</AuthContext.Provider>
+  const refreshToken = async () => {
+    try {
+      const result = await axiosInstance.get("/auth/refresh-token")
+      const { accessToken } = result.data.data
+      setAccessToken(accessToken)
+      const decode = jwtDecode<{ sub: string; phone: string }>(accessToken)
+      const userData = await findUserById(decode.sub)
+      setAuthUser(userData)
+      return result.data
+    } catch (error) {
+      console.error("refreshToken Error: ", error)
+      setAccessToken(null)
+      setAuthUser(null)
+      throw new Error("Unauthorized or expired token")
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ login, register, logout, refreshToken, authUser, accessToken }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }

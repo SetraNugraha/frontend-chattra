@@ -1,8 +1,5 @@
 "use client"
 
-import { contacts } from "@/dummy-data/contacts"
-import Image from "next/image"
-import Link from "next/link"
 import { LuMessageSquarePlus } from "react-icons/lu"
 import { SidebarFooter } from "./SidebarFooter"
 
@@ -18,9 +15,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
+import { useContact } from "@/hooks/useContact"
+import { SidebarListContacts } from "./SidebarListContacts"
 
 export const Sidebar = () => {
+  const { savedContacts } = useContact()
+
   return (
     <div className="relative h-full w-[30%] bg-gray-200 rounded-tl-xl rounded-bl-xl">
       <div className="px-5 pt-4">
@@ -64,22 +65,7 @@ export const Sidebar = () => {
         </div>
 
         {/* List Contacts */}
-        <div className="flex flex-col max-h-[650px] overflow-y-auto hide-scrollbar gap-y-3 mt-5">
-          {contacts.map((contact) => (
-            <Link
-              href={`/contact/${contact.number}`}
-              key={contact.id}
-              className="flex items-center gap-x-3 px-2 py-1 hover:bg-slate-300 hover:rounded-md"
-            >
-              <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
-
-              <div>
-                <h4 className="font-semibold">{contact.number}</h4>
-                <p className="text-sm text-slate-500">{contact.username}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <SidebarListContacts savedContacts={savedContacts} />
       </div>
 
       {/* Footer */}
