@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import { useState, useEffect, useContext, createContext, ReactNode } from "react"
 import axiosInstance from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
 import { useUser } from "@/hooks/useUser"
+import { useRouter } from "next/navigation"
 
 interface IRegister {
   phone: string
@@ -40,6 +40,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { findUserById } = useUser()
+  const router = useRouter()
   const [authUser, setAuthUser] = useState<IAuthUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
 
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshToken = async () => {
     try {
-      const result = await axiosInstance.get("/auth/refresh-token")
+      const result = await axiosInstance.post("/auth/refresh-token", {})
       const { accessToken } = result.data.data
       setAccessToken(accessToken)
       const decode = jwtDecode<{ sub: string; phone: string }>(accessToken)
@@ -94,6 +95,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       throw new Error("Unauthorized or expired token")
     }
   }
+
+  useEffect(() => {
+    const interceptor = axiosInstance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true
+          try {
+            const result = await axiosInstance.get("/auth/refresh-token")
+            const newAccessToken = result.data.data.accessToken
+            setAccessToken(newAccessToken)
+            originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`
+            axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`
+
+            return axiosInstance(originalRequest)
+          } catch (err) {
+            setAuthUser(null)
+            setAccessToken(null)
+            router.replace("auth/login")
+            return Promise.reject(err)
+          }
+        }
+
+        return Promise.reject(error)
+      }
+    )
+
+    return () => {
+      axiosInstance.interceptors.response.eject(interceptor)
+    }
+  }, [setAccessToken, setAuthUser, router])
 
   return (
     <AuthContext.Provider value={{ login, register, logout, refreshToken, authUser, accessToken }}>
