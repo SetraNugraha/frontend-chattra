@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
 
 export const SidebarFooter = () => {
-  const { logout } = useAuth()
+  const { logout, authUser } = useAuth()
   const router = useRouter()
   const [isSettingCLick, setIsSettingClick] = useState<boolean>(false)
 
@@ -37,8 +37,8 @@ export const SidebarFooter = () => {
           <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
 
           <div>
-            <h4 className="font-semibold">08182142</h4>
-            <p className="text-sm text-slate-500">Setra Nugraha</p>
+            <h4 className="font-semibold">{authUser?.phone}</h4>
+            <p className="text-sm text-slate-500">{authUser?.username}</p>
           </div>
         </Link>
 

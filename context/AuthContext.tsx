@@ -3,6 +3,8 @@
 "use client"
 import { useState, useEffect, useContext, createContext, ReactNode } from "react"
 import axiosInstance from "@/lib/axios"
+import { jwtDecode } from "jwt-decode"
+import { useUser } from "@/hooks/useUser"
 
 interface IRegister {
   phone: string
@@ -21,6 +23,7 @@ interface IAuthContext {
   login: (phone: string) => Promise<{ success: boolean; message: string; data: any }>
   register: (payload: IRegister) => Promise<{ success: boolean; message: string; data: any }>
   logout: () => Promise<{ success: string; message: string }>
+  authUser: IAuthUser | null
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined)
@@ -34,6 +37,7 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { findUserById } = useUser()
   const [authUser, setAuthUser] = useState<IAuthUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -41,9 +45,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (phone: string) => {
     try {
       const result = await axiosInstance.post("/auth/login", { phone })
+      const { accessToken } = result.data.data
+      setAccessToken(accessToken)
+      const decode = jwtDecode<{ sub: string; phone: string }>(accessToken)
+      const userData = await findUserById(decode.sub)
+      setAuthUser(userData)
       return result.data
     } catch (error) {
+      console.log("context login error: ", error)
       throw error
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -65,5 +77,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  return <AuthContext.Provider value={{ login, register, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ login, register, logout, authUser }}>{children}</AuthContext.Provider>
 }
