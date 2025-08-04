@@ -3,9 +3,10 @@
 
 import { useAuth } from "@/context/AuthContext"
 import axiosInstance from "@/lib/axios"
-import { useEffect, useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
 
-interface ISavedContacts {
+interface IContact {
   id: string
   username: string
   phone: string
@@ -14,7 +15,7 @@ interface ISavedContacts {
 
 export const useContact = () => {
   const { authUser, accessToken } = useAuth()
-  const [savedContacts, setSavedContacts] = useState<ISavedContacts[]>([])
+  const queryClient = useQueryClient()
 
   const getContacts = async () => {
     try {
@@ -23,13 +24,42 @@ export const useContact = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
+      const contacts: IContact[] = result.data.data
 
-      setSavedContacts(result.data.data)
+      return contacts
     } catch (error) {
       console.error("getContact Error: ", error)
       throw error
     }
   }
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["contact"],
+    queryFn: getContacts,
+  })
+
+  const addNewContact = useMutation({
+    mutationFn: async (phone: string) => {
+      const result = await axiosInstance.post(
+        "contact/save",
+        { phone: phone },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contact"] })
+    },
+    onError: (error) => {
+      console.error("Add new contact Error: ", error)
+      throw error
+    },
+  })
 
   useEffect(() => {
     if (accessToken && authUser) {
@@ -37,5 +67,5 @@ export const useContact = () => {
     }
   }, [accessToken, authUser])
 
-  return { savedContacts }
+  return { data, isLoading, getContacts, addNewContact }
 }
