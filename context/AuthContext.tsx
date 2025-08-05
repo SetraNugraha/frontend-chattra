@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthUser(userData)
       return result.data
     } catch (error) {
-      console.error("context login error: ", error)
+      console.log("context login error: ", error)
       setAccessToken(null)
       setAuthUser(null)
       throw error
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAuthUser(userData)
       return result.data
     } catch (error) {
-      console.error("refreshToken Error: ", error)
+      console.log("AuthContext refreshToken Error: ", error)
       setAccessToken(null)
       setAuthUser(null)
       throw new Error("Unauthorized or expired token")

@@ -37,7 +37,7 @@ export const AddNewContact = () => {
       onError: (error) => {
         console.error("add new contact mutate error: ", error)
         if (error instanceof AxiosError) {
-          setHasError(error.response?.data.fieldErrors.phone[0])
+          setHasError(error.response?.data.fieldErrors.phone[0] || "Unknown error")
         }
       },
     })
@@ -97,7 +97,7 @@ export const AddNewContact = () => {
               className="cursor-pointer hover:outline-none hover:ring-2 hover:ring-black hover:text-black hover:bg-white transition-all duration-300 disabled:bg-gray-600 disabled:text-white disabled:font-semibold"
               disabled={isLoading}
             >
-              Add Contact
+              {isLoading ? "Process saving ..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

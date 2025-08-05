@@ -1,13 +1,23 @@
 "use client"
 
 import { SidebarFooter } from "./SidebarFooter"
-import { useContact } from "@/hooks/useContact"
 import { SidebarListContacts } from "./SidebarListContacts"
 import { AddNewContact } from "./AddNewContact"
 
-export const Sidebar = () => {
-  const { data: savedContacts } = useContact()
+interface ISavedContact {
+  id: string
+  username: string
+  phone: string
+  profileImage: string | null
+}
 
+interface ISidebar {
+  savedContacts: ISavedContact[]
+  contactsLoading: boolean
+  onSelectedContact: (contact: ISavedContact) => void
+}
+
+export const Sidebar = ({ savedContacts, contactsLoading, onSelectedContact }: ISidebar) => {
   return (
     <div className="relative h-full w-[30%] bg-gray-200 rounded-tl-xl rounded-bl-xl">
       <div className="px-5 pt-4">
@@ -17,7 +27,11 @@ export const Sidebar = () => {
         </div>
 
         {/* List Contacts */}
-        <SidebarListContacts savedContacts={savedContacts ?? []} />
+        <SidebarListContacts
+          savedContacts={savedContacts}
+          contactsLoading={contactsLoading}
+          onSelectedContact={onSelectedContact}
+        />
       </div>
 
       {/* Footer */}

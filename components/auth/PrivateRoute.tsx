@@ -18,7 +18,7 @@ export const PrivateRoute = ({ children }: IPrivateRoute) => {
       try {
         await refreshToken()
       } catch (error) {
-        console.error("PrivateRoute - checkAuth: ", error)
+        console.log("PrivateRoute - checkAuth: ", error)
         alert("Need login first")
         router.replace("/auth/login")
       } finally {

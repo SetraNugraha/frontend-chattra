@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useAuth } from "@/context/AuthContext"
 import axiosInstance from "@/lib/axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useEffect } from "react"
 
 interface IContact {
   id: string
@@ -17,8 +15,10 @@ export const useContact = () => {
   const { authUser, accessToken } = useAuth()
   const queryClient = useQueryClient()
 
-  const getContacts = async () => {
-    try {
+  // GET Contact
+  const { data, isLoading } = useQuery({
+    queryKey: ["contact"],
+    queryFn: async () => {
       const result = await axiosInstance.get(`/contact/${authUser!.id}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -27,17 +27,10 @@ export const useContact = () => {
       const contacts: IContact[] = result.data.data
 
       return contacts
-    } catch (error) {
-      console.error("getContact Error: ", error)
-      throw error
-    }
-  }
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["contact"],
-    queryFn: getContacts,
+    },
   })
 
+  // POST Add new contact
   const addNewContact = useMutation({
     mutationFn: async (phone: string) => {
       const result = await axiosInstance.post(
@@ -57,15 +50,8 @@ export const useContact = () => {
     },
     onError: (error) => {
       console.error("Add new contact Error: ", error)
-      throw error
     },
   })
 
-  useEffect(() => {
-    if (accessToken && authUser) {
-      getContacts()
-    }
-  }, [accessToken, authUser])
-
-  return { data, isLoading, getContacts, addNewContact }
+  return { data, isLoading, addNewContact }
 }

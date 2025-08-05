@@ -8,15 +8,12 @@ interface IAuthUser {
   token: string | null
 }
 
-interface IUseUser {
-  findUserById: (userId: string) => Promise<IAuthUser>
-}
-
-export const useUser = (): IUseUser => {
+export const useUser = () => {
   const findUserById = async (userId: string) => {
     try {
       const result = await axiosInstance.get(`/user/${userId}`)
-      return result.data.data
+      const user: IAuthUser = result.data.data
+      return user
     } catch (error) {
       console.error("findUserById Error: ", error)
       throw error
