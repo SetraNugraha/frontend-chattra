@@ -49,7 +49,7 @@ export const useContact = () => {
       queryClient.invalidateQueries({ queryKey: ["contact"] })
     },
     onError: (error) => {
-      console.error("Add new contact Error: ", error)
+      console.log("Add new contact Error: ", error)
     },
   })
 

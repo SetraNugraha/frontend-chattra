@@ -8,6 +8,7 @@ import { Textarea } from "../ui/textarea"
 import { FormEvent, useEffect, useRef, useState } from "react"
 import { useMessage } from "@/hooks/useMessage"
 import { useAuth } from "@/context/AuthContext"
+import { useSocket } from "@/hooks/useSocket"
 
 interface ISelectedContact {
   id: string
@@ -19,12 +20,22 @@ interface IChatSection {
   selectedContact: ISelectedContact | null
 }
 
+interface Message {
+  id: string
+  senderId: string
+  receiverId: string
+  body: string
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
 export default function ChatSection({ selectedContact }: IChatSection) {
   const { authUser } = useAuth()
   const senderId: string = authUser!.id
   const { data: messages, isLoading: messagesLoading, sendMessage } = useMessage(selectedContact?.id)
   const [bodyChat, setBodyChat] = useState<string>("")
   const bottomMessageRef = useRef<HTMLDivElement>(null)
+  const [localMessages, setLocalMessages] = useState(messages || [])
 
   const handleSendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -44,16 +55,31 @@ export default function ChatSection({ selectedContact }: IChatSection) {
     })
   }
 
+  useSocket(authUser?.id, (data) => {
+    try {
+      const message: Message = typeof data === "string" ? JSON.parse(data) : data
+      setLocalMessages((prev) => [...prev, message])
+    } catch (error) {
+      console.error("Invalid socket message format: ", error)
+    }
+  })
+
+  useEffect(() => {
+    if (messages) {
+      setLocalMessages(messages)
+    }
+  }, [messages])
+
   useEffect(() => {
     bottomMessageRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  }, [localMessages])
 
   return (
     <div className="relative h-full w-screen bg-gray-600 rounded-tr-xl rounded-br-xl">
       <Header hidden={!selectedContact} username={selectedContact?.username || " "} />
 
       {/* Bubble Chat */}
-      <div className="max-h-[630px] overflow-y-auto hide-scrollbar p-3">
+      <div className="max-h-[610px]  overflow-y-auto hide-scrollbar p-3">
         {selectedContact === null ? (
           <h1 className="text-white font-semibold text-center text-2xl mt-10">Lets message to each other !</h1>
         ) : messagesLoading ? (
@@ -62,7 +88,7 @@ export default function ChatSection({ selectedContact }: IChatSection) {
           <h1 className="text-white font-semibold text-center text-2xl mt-10">Lets message to each other !</h1>
         ) : (
           <>
-            {messages?.map((message, index) => (
+            {localMessages?.map((message, index) => (
               <BubbleChat key={index} isSenderId={message.senderId === senderId}>
                 {message.body}
               </BubbleChat>
@@ -73,7 +99,7 @@ export default function ChatSection({ selectedContact }: IChatSection) {
       </div>
 
       {/* Input Message */}
-      <div hidden={!selectedContact} className="absolute  w-[95%] bottom-5 left-1/2 -translate-x-1/2">
+      <div hidden={!selectedContact} className="absolute w-[95%] bottom-5 left-1/2 -translate-x-1/2">
         <form className="relative" onSubmit={handleSendMessage}>
           <Textarea
             placeholder="Type your message here ..."
