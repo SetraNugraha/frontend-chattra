@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true
           try {
-            const result = await axiosInstance.get("/auth/refresh-token")
+            const result = await axiosInstance.post("/auth/refresh-token")
             const newAccessToken = result.data.data.accessToken
             setAccessToken(newAccessToken)
             originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`

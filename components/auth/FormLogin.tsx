@@ -34,8 +34,8 @@ export function FormLogin() {
     try {
       const result = await login(phone)
       if (result.success) {
-        setPhone("")
         setLoginState((prevState) => ({ ...prevState, hasError: { phone: null } }))
+        setPhone("")
         alert("login success")
         router.push("/")
       }
@@ -69,14 +69,14 @@ export function FormLogin() {
                 type="number"
                 placeholder="8 digit, ex: 87164182"
                 required
-                className={`${loginState.hasError.phone && "ring-1 ring-red-500"}`}
+                className={`${loginState.hasError?.phone && "ring-1 ring-red-500"}`}
                 value={phone}
                 maxLength={8}
                 onChange={(e) => setPhone(e.target.value)}
               />
 
               {/* Login Error Validtion */}
-              {loginState.hasError.phone && (
+              {loginState.hasError?.phone && (
                 <span className="text-sm text-red-500 ml-3 italic">{loginState.hasError.phone[0]}</span>
               )}
             </div>

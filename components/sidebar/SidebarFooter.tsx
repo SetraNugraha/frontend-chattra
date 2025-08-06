@@ -6,6 +6,7 @@ import { useState } from "react"
 import { IoMdSettings } from "react-icons/io"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
+import { UpdateProfileImage } from "./UpdateProfileImage"
 
 export const SidebarFooter = () => {
   const { logout, authUser } = useAuth()
@@ -49,10 +50,8 @@ export const SidebarFooter = () => {
           </button>
 
           {isSettingCLick && (
-            <div className="bg-gray-600  absolute -left-20 -top-21 w-[120px] text-white py-2 px-3 rounded-md flex flex-col gap-y-1 items-start text-sm tracking-wider">
-              <button className="cursor-pointer px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-600 w-full text-start">
-                Edit Profile
-              </button>
+            <div className="bg-gray-600  absolute -left-30 -top-21 w-[170px] text-white py-2 px-3 rounded-md flex flex-col gap-y-1 text-sm tracking-wider">
+              <UpdateProfileImage />
               <span className="h-0.5 w-full bg-white"></span>
               <button
                 className="cursor-pointer px-2 py-1 rounded-md hover:bg-red-600 w-full text-start"
