@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -14,13 +13,45 @@ import {
 import { Label } from "@/components/ui/label"
 import { Button } from "../ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Image from "next/image"
+import { useAuth } from "@/context/AuthContext"
+import { useUser } from "@/hooks/useUser"
 
 export const UpdateProfileImage = () => {
+  const { authUser } = useAuth()
+  const { data: user, isLoading, updateProfileImage } = useUser(authUser?.id)
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  const [fileImage, setFileImage] = useState<string>("")
   const [hasError, setHasError] = useState<string>("")
+  const [fileImage, setFileImage] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleInputImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFileImage(file)
+    }
+  }
+
+  const handleUpdateProfileImage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    updateProfileImage.mutate(fileImage, {
+      onSuccess: () => {
+        setFileImage(null)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+        alert("Update profile image success")
+      },
+      onError: (error) => {
+        console.error("update profile error: ", error)
+        alert("Error while updating profile image, Please try again later ...")
+        setFileImage(null)
+        setIsDialogOpen(false)
+      },
+    })
+  }
 
   return (
     <Dialog
@@ -28,7 +59,7 @@ export const UpdateProfileImage = () => {
       onOpenChange={(open) => {
         setIsDialogOpen(open)
         if (open) {
-          setFileImage("")
+          setFileImage(null)
           setHasError("")
         }
       }}
@@ -45,31 +76,52 @@ export const UpdateProfileImage = () => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Update Profile Image</DialogTitle>
-          <div className="w-full h-[300px] my-5 flex items-center justify-center">
-            <Image src={"/snorlax-pixel.png"} width={300} height={300} alt="profile-image" className="rounded-2xl" />
+
+          <div className="h-[320px] my-5 flex flex-col items-center justify-center gap-y-2">
+            <div className="relative w-full h-full overflow-hidden">
+              <Image
+                src={user?.profileImage || "/snorlax-pixel.png"}
+                fill
+                alt="profile-image"
+                className="object-contain"
+              />
+            </div>
+            {/* Delete Image Button */}
+            <Button
+              disabled={updateProfileImage.isPending}
+              className="bg-red-500 font-semibold text-sm tracking-wide cursor-pointer disabled:bg-gray-600"
+            >
+              Delete Image
+            </Button>
           </div>
         </DialogHeader>
-        <form className="grid gap-4">
+        <form className="grid gap-4" onSubmit={handleUpdateProfileImage}>
           <div className="grid gap-3">
             <Label htmlFor="phone" className="font-semibold ml-1">
               Choose File : [ jpg, jpeg, png ]
             </Label>
-            <Input id="profileImage" name="profileImage" type="file" />
+            <Input id="profileImage" name="profileImage" type="file" ref={fileInputRef} onChange={handleInputImage} />
 
+            {fileImage && <p className="text-sm font-semibold text-blue-500 ml-3 -mt-2 italic">File uploaded</p>}
             {hasError && <span className="text-sm font-semibold text-red-500 ml-2 -mt-1">{hasError}</span>}
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" className="cursor-pointer hover:brightness-70">
+              <Button
+                disabled={updateProfileImage.isPending}
+                variant="outline"
+                className="cursor-pointer hover:brightness-70 disabled:text-white disabled:bg-gray-600"
+              >
                 Cancel
               </Button>
             </DialogClose>
             <Button
+              disabled={updateProfileImage.isPending}
               type="submit"
               className="cursor-pointer hover:outline-none hover:ring-2 hover:ring-black hover:text-black hover:bg-white transition-all duration-300 disabled:bg-gray-600 disabled:text-white disabled:font-semibold"
             >
-              Update
+              {updateProfileImage.isPending ? "Process Updating ..." : "Update"}
             </Button>
           </DialogFooter>
         </form>

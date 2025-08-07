@@ -3,7 +3,6 @@
 import { useState, useEffect, useContext, createContext, ReactNode } from "react"
 import axiosInstance from "@/lib/axios"
 import { jwtDecode } from "jwt-decode"
-import { useUser } from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 
 interface IRegister {
@@ -39,10 +38,18 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { findUserById } = useUser()
   const router = useRouter()
   const [authUser, setAuthUser] = useState<IAuthUser | null>(null)
   const [accessToken, setAccessToken] = useState<string | null>(null)
+
+  const findUserById = async (userId: string) => {
+    try {
+      const result = await axiosInstance.get(`/user/${userId}`)
+      return result.data.data
+    } catch (error) {
+      console.error("Error find user by id: ", error)
+    }
+  }
 
   const login = async (phone: string) => {
     try {

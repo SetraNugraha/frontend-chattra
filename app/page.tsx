@@ -21,7 +21,11 @@ export default function Home() {
     <main className="flex items-center justify-center h-[85%] w-[90%] shadow-xl shadow-gray-300 rounded-xl ring-2 ring-gray-400">
       <PrivateRoute>
         {/* Leftbar */}
-        <Sidebar contactsLoading={contactsLoading} savedContacts={savedContacts ?? []} onSelectedContact={(contact) => setSelectedContact(contact)} />
+        <Sidebar
+          contactsLoading={contactsLoading}
+          savedContacts={savedContacts ?? []}
+          onSelectedContact={(contact) => setSelectedContact(contact)}
+        />
 
         {/* Rightbar */}
         <ChatSection selectedContact={selectedContact} />

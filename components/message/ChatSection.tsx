@@ -55,10 +55,10 @@ export default function ChatSection({ selectedContact }: IChatSection) {
     })
   }
 
-  useSocket(authUser?.id, (data) => {
+  useSocket(authUser?.id, (data: Message) => {
     try {
-      const message: Message = typeof data === "string" ? JSON.parse(data) : data
-      setLocalMessages((prev) => [...prev, message])
+      // const message: Message = typeof data === "string" ? JSON.parse(data) : data
+      setLocalMessages((prev) => [...prev, data])
     } catch (error) {
       console.error("Invalid socket message format: ", error)
     }
