@@ -35,7 +35,7 @@ export const AddNewContact = () => {
         setIsDialogOpen(false)
       },
       onError: (error) => {
-        console.error("add new contact mutate error: ", error)
+        console.log("add new contact mutate error: ", error)
         if (error instanceof AxiosError) {
           setHasError(error.response?.data.fieldErrors.phone[0] || "Unknown error")
         }

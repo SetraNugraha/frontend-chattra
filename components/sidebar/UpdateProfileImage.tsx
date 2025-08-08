@@ -99,7 +99,7 @@ export const UpdateProfileImage = () => {
           <div className="h-[320px] my-5 flex flex-col items-center justify-center gap-y-2">
             <div className="relative w-full h-full overflow-hidden">
               <Image
-                src={user?.profileImage || "/snorlax-pixel.png"}
+                src={user?.profileImage || "/no-image.png"}
                 fill
                 alt="profile-image"
                 className="object-contain"
