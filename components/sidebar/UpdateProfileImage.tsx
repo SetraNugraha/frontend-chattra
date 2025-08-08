@@ -98,12 +98,7 @@ export const UpdateProfileImage = () => {
 
           <div className="h-[320px] my-5 flex flex-col items-center justify-center gap-y-2">
             <div className="relative w-full h-full overflow-hidden">
-              <Image
-                src={user?.profileImage || "/no-image.png"}
-                fill
-                alt="profile-image"
-                className="object-contain"
-              />
+              <Image src={user?.profileImage || "/no-image.png"} fill alt="profile-image" className="object-contain" />
             </div>
             {/* Delete Image Button */}
             <Button
@@ -144,7 +139,9 @@ export const UpdateProfileImage = () => {
               </Button>
             </DialogClose>
             <Button
-              disabled={updateProfileImage.isPending || deleteProfileImage.isPending}
+              disabled={
+                !fileImage || fileImage === null || updateProfileImage.isPending || deleteProfileImage.isPending
+              }
               type="submit"
               className="cursor-pointer hover:outline-none hover:ring-2 hover:ring-black hover:text-black hover:bg-white transition-all duration-300 disabled:bg-gray-600 disabled:text-white disabled:font-semibold"
             >

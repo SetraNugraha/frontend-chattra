@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/sidebar/Sidebar"
 import ChatSection from "@/components/message/ChatSection"
 import { useContact } from "@/hooks/useContact"
 import { useState } from "react"
+import { useAuth } from "@/context/AuthContext"
 
 interface IContact {
   id: string
@@ -14,7 +15,8 @@ interface IContact {
 }
 
 export default function Home() {
-  const { data: savedContacts, isLoading: contactsLoading } = useContact()
+  const { authUser } = useAuth()
+  const { data: savedContacts, isLoading: contactsLoading } = useContact(authUser?.id)
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null)
 
   return (
