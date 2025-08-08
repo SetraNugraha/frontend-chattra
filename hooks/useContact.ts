@@ -11,15 +11,15 @@ interface IContact {
   profileImage: string | null
 }
 
-export const useContact = (userId: string | undefined) => {
-  const { accessToken } = useAuth()
+export const useContact = () => {
+  const { accessToken, authUser } = useAuth()
   const queryClient = useQueryClient()
 
   // GET Contact
   const { data, isLoading } = useQuery({
-    queryKey: ["contact", userId],
+    queryKey: ["contact"],
     queryFn: async () => {
-      const result = await axiosInstance.get(`/contact/${userId}`, {
+      const result = await axiosInstance.get(`/contact/${authUser?.id}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -46,7 +46,7 @@ export const useContact = (userId: string | undefined) => {
       return result.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contact", userId] })
+      queryClient.invalidateQueries({ queryKey: ["contact"] })
     },
     onError: (error) => {
       console.log("Add new contact Error: ", error)

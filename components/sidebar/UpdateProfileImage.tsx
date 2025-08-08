@@ -106,7 +106,7 @@ export const UpdateProfileImage = () => {
               onClick={handleDeleteProfileImage}
               className="bg-red-500 font-semibold text-sm tracking-wide cursor-pointer disabled:bg-gray-600"
             >
-              Delete Image
+              {deleteProfileImage.isPending ? "Deleting Image ..." : "Delete Image"}
             </Button>
           </div>
         </DialogHeader>
