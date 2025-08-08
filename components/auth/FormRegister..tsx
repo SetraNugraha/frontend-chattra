@@ -87,12 +87,12 @@ export function FormRegister() {
                 type="number"
                 placeholder="8 digit, ex: 87164182"
                 required
-                className={`${registerState.hasError.phone && "ring-1 ring-red-500"}`}
+                className={`${registerState.hasError?.phone && "ring-1 ring-red-500"}`}
                 value={formRegister.phone}
                 onChange={(e) => setFormRegister((prevState) => ({ ...prevState, phone: e.target.value }))}
               />
               {/* Error Message Phone*/}
-              {registerState.hasError.phone && (
+              {registerState.hasError?.phone && (
                 <span className="text-sm text-red-500 italic ml-2">{registerState.hasError.phone[0]}</span>
               )}
             </div>
@@ -107,13 +107,13 @@ export function FormRegister() {
                 type="text"
                 placeholder="username"
                 required
-                className={`${registerState.hasError.username && "ring-1 ring-red-500"}`}
+                className={`${registerState.hasError?.username && "ring-1 ring-red-500"}`}
                 value={formRegister.username}
                 onChange={(e) => setFormRegister((prevState) => ({ ...prevState, username: e.target.value }))}
               />
 
               {/* Error Message Username*/}
-              {registerState.hasError.username && (
+              {registerState.hasError?.username && (
                 <span className="text-sm text-red-500 italic ml-2">{registerState.hasError.username[0]}</span>
               )}
             </div>
