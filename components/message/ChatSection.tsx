@@ -109,7 +109,8 @@ export default function ChatSection({ selectedContact }: IChatSection) {
           />
           <button
             type="submit"
-            className="absolute right-7 top-1/2 -translate-y-1/2 p-2 cursor-pointer rounded-full bg-gray-600 hover:outline-none hover:ring-2 hover:ring-gray-600 hover:bg-white transition-all duration-300 group"
+            disabled={!bodyChat || bodyChat.length === 0 || bodyChat === ""}
+            className="absolute right-7 top-1/2 -translate-y-1/2 p-2 cursor-pointer rounded-full bg-gray-600 hover:outline-none hover:ring-2 hover:ring-gray-600 hover:bg-white disabled:cursor-not-allowed transition-all duration-300 group"
           >
             <GrSend size={20} className="text-white group-hover:text-gray-600" />
           </button>
