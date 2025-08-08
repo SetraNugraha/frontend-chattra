@@ -30,9 +30,16 @@ export const SidebarListContacts = ({ savedContacts, contactsLoading, onSelected
           <button
             key={contact.id}
             onClick={() => onSelectedContact(contact)}
-            className="flex items-center justify-start gap-x-3 px-2 py-1 hover:bg-slate-300 hover:rounded-md cursor-pointer"
+            className="flex items-center h-[40px] justify-start gap-x-3 px-2 py-1 hover:bg-slate-300 hover:rounded-md cursor-pointer"
           >
-            <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
+            <div className="relative h-[40px] w-[40px]">
+              <Image
+                src={contact?.profileImage || "/no-image.png"}
+                alt="profile-image"
+                fill
+                className="rounded-md object-contain"
+              />
+            </div>
 
             <div className="text-start">
               <h4 className="font-semibold ">{contact.phone}</h4>

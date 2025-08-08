@@ -58,5 +58,24 @@ export const useUser = (userId: string | undefined) => {
     },
   })
 
-  return { findUserById, data, isLoading, updateProfileImage }
+  const deleteProfileImage = useMutation({
+    mutationKey: ["user", userId],
+    mutationFn: async (userId: string | undefined) => {
+      const result = await axiosInstance.patch(`user/delete-profile-image/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      return result.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", userId] })
+    },
+    onError: (error) => {
+      console.error("delete profile image error: ", error)
+    },
+  })
+
+  return { findUserById, data, isLoading, updateProfileImage, deleteProfileImage }
 }

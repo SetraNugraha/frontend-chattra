@@ -57,7 +57,6 @@ export default function ChatSection({ selectedContact }: IChatSection) {
 
   useSocket(authUser?.id, (data: Message) => {
     try {
-      // const message: Message = typeof data === "string" ? JSON.parse(data) : data
       setLocalMessages((prev) => [...prev, data])
     } catch (error) {
       console.error("Invalid socket message format: ", error)
@@ -75,7 +74,7 @@ export default function ChatSection({ selectedContact }: IChatSection) {
   }, [localMessages])
 
   return (
-    <div className="relative h-full w-screen bg-gray-600 rounded-tr-xl rounded-br-xl">
+    <div className="relative h-full w-1/2 bg-gray-600 rounded-tr-xl rounded-br-xl">
       <Header hidden={!selectedContact} username={selectedContact?.username || " "} />
 
       {/* Bubble Chat */}
@@ -105,6 +104,7 @@ export default function ChatSection({ selectedContact }: IChatSection) {
             placeholder="Type your message here ..."
             className="bg-white resize-none overflow-y-auto max-h-50 pr-22"
             value={bodyChat}
+            maxLength={500}
             onChange={(e) => setBodyChat(e.target.value)}
           />
           <button

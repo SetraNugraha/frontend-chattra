@@ -7,9 +7,11 @@ import { IoMdSettings } from "react-icons/io"
 import { useAuth } from "@/context/AuthContext"
 import { useRouter } from "next/navigation"
 import { UpdateProfileImage } from "./UpdateProfileImage"
+import { useUser } from "@/hooks/useUser"
 
 export const SidebarFooter = () => {
   const { logout, authUser } = useAuth()
+  const { data: user } = useUser(authUser?.id)
   const router = useRouter()
   const [isSettingCLick, setIsSettingClick] = useState<boolean>(false)
 
@@ -32,10 +34,17 @@ export const SidebarFooter = () => {
     <div className="absolute w-full bottom-0 rounded-bl-xl px-3 py-2 z-50 bg-gray-300/80">
       <div className="flex items-center justify-between pr-5">
         <Link
-          href={`/contact/871561234`}
+          href={"#"}
           className="flex items-center gap-x-3 px-2 py-1 w-[80%] hover:bg-white hover:rounded-md hover:rounded-bl-xl"
         >
-          <Image src={"/snorlax-pixel.png"} alt="profile-image" width={40} height={40} className="rounded-md" />
+          <div className="relative h-[40px] w-[40px]">
+            <Image
+              src={user?.profileImage || "/no-image.png"}
+              alt="profile-image"
+              fill
+              className="rounded-md object-contain"
+            />
+          </div>
 
           <div>
             <h4 className="font-semibold">{authUser?.phone ?? "-"}</h4>

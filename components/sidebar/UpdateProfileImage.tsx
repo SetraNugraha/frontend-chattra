@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import {
@@ -20,7 +19,7 @@ import { useUser } from "@/hooks/useUser"
 
 export const UpdateProfileImage = () => {
   const { authUser } = useAuth()
-  const { data: user, isLoading, updateProfileImage } = useUser(authUser?.id)
+  const { data: user, updateProfileImage, deleteProfileImage } = useUser(authUser?.id)
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [hasError, setHasError] = useState<string>("")
   const [fileImage, setFileImage] = useState<File | null>(null)
@@ -53,6 +52,23 @@ export const UpdateProfileImage = () => {
     })
   }
 
+  const handleDeleteProfileImage = () => {
+    const isConfirm = confirm("Are you sure want to delete profile image ?")
+
+    if (isConfirm) {
+      deleteProfileImage.mutate(authUser?.id, {
+        onSuccess: () => {
+          alert("Success delete profile image")
+        },
+        onError: (error) => {
+          console.error("update profile error: ", error)
+          alert("Error while updating profile image, Please try again later ...")
+          setIsDialogOpen(false)
+        },
+      })
+    }
+  }
+
   return (
     <Dialog
       open={isDialogOpen}
@@ -61,6 +77,9 @@ export const UpdateProfileImage = () => {
         if (open) {
           setFileImage(null)
           setHasError("")
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ""
+          }
         }
       }}
     >
@@ -88,7 +107,8 @@ export const UpdateProfileImage = () => {
             </div>
             {/* Delete Image Button */}
             <Button
-              disabled={updateProfileImage.isPending}
+              disabled={!user?.profileImage || updateProfileImage.isPending || deleteProfileImage.isPending}
+              onClick={handleDeleteProfileImage}
               className="bg-red-500 font-semibold text-sm tracking-wide cursor-pointer disabled:bg-gray-600"
             >
               Delete Image
@@ -100,7 +120,14 @@ export const UpdateProfileImage = () => {
             <Label htmlFor="phone" className="font-semibold ml-1">
               Choose File : [ jpg, jpeg, png ]
             </Label>
-            <Input id="profileImage" name="profileImage" type="file" ref={fileInputRef} onChange={handleInputImage} />
+            <Input
+              id="profileImage"
+              name="profileImage"
+              type="file"
+              ref={fileInputRef}
+              disabled={updateProfileImage.isPending || deleteProfileImage.isPending}
+              onChange={handleInputImage}
+            />
 
             {fileImage && <p className="text-sm font-semibold text-blue-500 ml-3 -mt-2 italic">File uploaded</p>}
             {hasError && <span className="text-sm font-semibold text-red-500 ml-2 -mt-1">{hasError}</span>}
@@ -109,7 +136,7 @@ export const UpdateProfileImage = () => {
           <DialogFooter>
             <DialogClose asChild>
               <Button
-                disabled={updateProfileImage.isPending}
+                disabled={updateProfileImage.isPending || deleteProfileImage.isPending}
                 variant="outline"
                 className="cursor-pointer hover:brightness-70 disabled:text-white disabled:bg-gray-600"
               >
@@ -117,7 +144,7 @@ export const UpdateProfileImage = () => {
               </Button>
             </DialogClose>
             <Button
-              disabled={updateProfileImage.isPending}
+              disabled={updateProfileImage.isPending || deleteProfileImage.isPending}
               type="submit"
               className="cursor-pointer hover:outline-none hover:ring-2 hover:ring-black hover:text-black hover:bg-white transition-all duration-300 disabled:bg-gray-600 disabled:text-white disabled:font-semibold"
             >

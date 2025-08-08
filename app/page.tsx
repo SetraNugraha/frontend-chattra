@@ -18,7 +18,7 @@ export default function Home() {
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null)
 
   return (
-    <main className="flex items-center justify-center h-[85%] w-[90%] shadow-xl shadow-gray-300 rounded-xl ring-2 ring-gray-400">
+    <main className="flex items-center justify-center h-[85%] w-[90%] rounded-xl ">
       <PrivateRoute>
         {/* Leftbar */}
         <Sidebar
